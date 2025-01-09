@@ -13,7 +13,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Pull the code from your GitHub repository
-                git 'https://github.com/your-username/Website-PRT-ORG.git'
+                git 'https://github.com/rraksha28/Website-PRT-ORG.git'
             }
         }
 
