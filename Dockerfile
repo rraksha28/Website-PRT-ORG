@@ -1,17 +1,8 @@
-# Use a Node.js base image
-FROM node:14-alpine
+# Use the official Apache image as the base image
+FROM httpd:2.4
 
-# Set the working directory
-WORKDIR /app
+# Copy website files to the Apache document root
+COPY . /usr/local/apache2/htdocs/
 
-# Copy the application files
-COPY . .
-
-# Install dependencies
-RUN npm install
-
-# Expose port 8080
-EXPOSE 8080
-
-# Start the app
-CMD ["npm", "start"]
+# Expose port 80
+EXPOSE 80
