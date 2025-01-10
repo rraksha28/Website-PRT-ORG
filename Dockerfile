@@ -1,19 +1,11 @@
-# Use the official Nginx image as the base image
+# Use an official web server as a base image
 FROM nginx:latest
 
-# Set the maintainer label
-LABEL maintainer="your-email@example.com"
+# Copy the website files to the Nginx HTML directory
+COPY . /usr/share/nginx/html
 
-# Remove the default Nginx website
-RUN rm -rf /usr/share/nginx/html/*
-
-# Clone the repository and copy the content into the Nginx directory
-RUN apt-get update && apt-get install -y git \
-    && git clone https://github.com/Sameer-8080/Website-PRT-ORG.git /tmp/website \
-    && cp -r /tmp/website/* /usr/share/nginx/html/
-
-# Expose the default HTTP port
+# Expose port 80
 EXPOSE 80
 
-# Start Nginx when the container starts
+# Start Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]
