@@ -1,70 +1,39 @@
 pipeline {
-    agent any  // This runs on any available agent (master or worker)
-
+    agent any
     environment {
-        DOCKER_IMAGE = 'website-image'  // Name of the Docker image
-        DOCKER_TAG = 'latest'           // Tag for the Docker image (can be based on the Git commit ID)
-        REGISTRY = 'dockerhub'          // Docker registry (can also be AWS ECR or others)
-        EC2_IP = '18.189.186.89 '  // EC2 instance IP where the Docker container will run
-        SSH_CREDENTIALS = 'practice.pem' // SSH credentials ID for Jenkins
+        DOCKER_IMAGE = 'inteli24/website-prt-org'
+        DOCKER_REGISTRY = 'https://hub.docker.com'
     }
-
     stages {
-        stage('Clone Repository') {
+        stage('Checkout Code') {
             steps {
-                // Pull the code from your GitHub repository
                 git 'https://github.com/rraksha28/Website-PRT-ORG.git'
             }
         }
-
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image using the Dockerfile
-                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                    // Build Docker Image
+                    sh 'docker build -t prt .'
                 }
             }
         }
-
         stage('Push Docker Image to DockerHub') {
             steps {
                 script {
-                    // Log in to DockerHub and push the image
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                        docker.image("${docker pull httpd}:${DOCKER_TaAG}").push()
-                    }
-                }
-            }
-        }
-
-        stage('Deploy to EC2') {
-            steps {
-                sshagent(['ec2-ssh-credentials']) {
-                    script {
-                        // SSH into EC2 and deploy the Docker container
-                        sh """
-                            ssh -o StrictHostKeyChecking=no ec2-user@${18.189.186.89} << EOF
-                            # Stop any running container (optional)
-                            docker stop website-container || true
-                            docker rm website-container || true
-
-                            # Pull the latest image from DockerHub
-                            docker pull ${docker pull httpd}:${httpd}
-
-                            # Run the Docker container (binding port 8080 for the website)
-                            docker run -d -p 8080:8080 --name website-container ${DOCKER_IMAGE}:${DOCKER_TAG}
-                            EOF
-                        """
-                    }
+                    // Log in to DockerHub and Push the Image
+                    sh 'docker login -u inteli24 -p Raksha@24'
+                    sh 'docker push prt'
                 }
             }
         }
     }
-
     post {
-        always {
-            // Clean workspace after the build
-            cleanWs()
+        success {
+            echo 'Docker image built and pushed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
         }
     }
 }
