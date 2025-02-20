@@ -1,11 +1,18 @@
-# Use an official web server as a base image
-FROM nginx:latest
+# Use the official Node.js image as the base image
+FROM node:18
 
-# Copy the website files to the Nginx HTML directory
-COPY . /usr/share/nginx/html
+# Set the working directory
+WORKDIR /app
 
-# Expose port 80
-EXPOSE 80
+# Copy package files and install dependencies
+COPY package*.json ./
+RUN npm install
 
-# Start Nginx in the foreground
-CMD ["nginx", "-g", "daemon off;"]
+# Copy the entire project
+COPY . .
+
+# Expose the port the app runs on
+EXPOSE 3000
+
+# Start the application
+CMD ["npm", "start"]
